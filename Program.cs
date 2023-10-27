@@ -106,19 +106,25 @@ namespace IgniteWithCassandraExample
             // cara mengakses cassandra via terminal:
             // $ docker exec -it cassandra-container cqlsh
             //
-            // menghentikan 
+            // menghentikan container:
             // $ docker stop cassandra-container
             //
             // menghapus container (setelah menghentikannya):
             // $ docker rm cassandra-container
+            // 
+            // mejalankan Program.cs:
+            // $ dotnet run
+
 
             OpenConnection();
             if (_session == null)
             {
                 throw new InvalidOperationException("Session is not initialized");
             }
+
             DropKeyspace(_session, KeyspaceName);
             InitializeCassandra();
+
             // create todo
             var uuids = InsertDummyTodos();
 
@@ -157,6 +163,8 @@ namespace IgniteWithCassandraExample
                     Console.WriteLine($"{todo.Id}. {todo.Task} (Completed: {todo.Completed}, User: {todo.UserId})");
                 }
             }
+
+            Dispose();
         }
 
         static void DropKeyspace(ISession session, string? keyspaceName)
@@ -172,7 +180,7 @@ namespace IgniteWithCassandraExample
             }
         }
         
-        private static void OpenConnection()
+        static void OpenConnection()
         {
             // Membaca konfigurasi dari appsettings.json.
             var configuration = new ConfigurationBuilder()
@@ -189,7 +197,7 @@ namespace IgniteWithCassandraExample
             _session = _cluster.Connect();
         }
 
-        private static void InitializeCassandra()
+        static void InitializeCassandra()
         {
             var createKeyspaceQuery = $"CREATE KEYSPACE IF NOT EXISTS {KeyspaceName} WITH REPLICATION = {{ 'class' : 'SimpleStrategy', 'replication_factor' : 1 }};";
             _session?.Execute(createKeyspaceQuery);
@@ -211,7 +219,7 @@ namespace IgniteWithCassandraExample
             _session?.Execute("CREATE INDEX IF NOT EXISTS ON todos (user_id);");
         }
 
-        private static List<Guid> InsertDummyTodos()
+        static List<Guid> InsertDummyTodos()
         {
             var uuids = new List<Guid>();
             var todos = new List<Todo>
@@ -238,7 +246,7 @@ namespace IgniteWithCassandraExample
             return uuids;
         }
         
-        private static void UpdateTodo(Guid selectedUuid)
+        static void UpdateTodo(Guid selectedUuid)
         {
             // Update data berdasarkan UUID yang dipilih
             // Misalnya update kolom task dari tabel todos berdasarkan UUID
@@ -249,7 +257,7 @@ namespace IgniteWithCassandraExample
             Console.WriteLine($"Updated task for UUID: {selectedUuid}");
         }
 
-        private static void DeleteTodo(Guid selectedUuidToDelete)
+        static void DeleteTodo(Guid selectedUuidToDelete)
         {
             // Menghapus data berdasarkan UUID yang dipilih
             var deleteStatement = _session?.Prepare("DELETE FROM todos WHERE id = ?");
@@ -265,7 +273,7 @@ namespace IgniteWithCassandraExample
             Console.WriteLine($"Deleted task for UUID: {selectedUuidToDelete}");
         }
 
-        public void Dispose()
+        static void Dispose()
         {
             _session?.Dispose();
             _cluster?.Dispose();
