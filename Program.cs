@@ -103,6 +103,10 @@ namespace IgniteWithCassandraExample
             // menampilkan container yang sedang berjalan:
             // $ docker ps -a
             //
+            // merestart docker container
+            // $ docker restart <container-id>
+            // $ docker restart ee7b370dccaa
+            //
             // cara mengakses cassandra via terminal:
             // $ docker exec -it cassandra-container cqlsh
             //
@@ -112,6 +116,10 @@ namespace IgniteWithCassandraExample
             // menghapus container (setelah menghentikannya):
             // $ docker rm cassandra-container
             // 
+            // Handling Emergency Situations with Kill
+            // $ docker kill <container-id>
+            // $ docker start <container-id>
+            //
             // mejalankan Program.cs:
             // $ dotnet run
 
